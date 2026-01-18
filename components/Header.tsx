@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Moon, User, LayoutGrid, History, X, FileText, Car, Users, ChevronRight, FileQuestion } from 'lucide-react';
+import { Search, Bell, Sun, User, LayoutGrid, History, X, FileText, Car, Users, ChevronRight, FileQuestion, MapPin } from 'lucide-react';
 import WorkspaceTabs from './WorkspaceTabs';
 import { useNavigation } from '../context/NavigationContext';
 import { MOCK_ROS } from '../data/mockData';
@@ -93,17 +93,12 @@ const Header: React.FC = () => {
     <header className="flex flex-col bg-white border-b border-gray-200 shadow-sm z-10 shrink-0 relative">
       {/* Top Bar: Brand, Search, Actions */}
       <div className="h-14 flex items-center justify-between px-4">
-        {/* Left: Brand */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                D
+        {/* Left: Branch Info (Logo removed as it is in Sidebar) */}
+        <div className="flex items-center space-x-2">
+            <div className="bg-gray-100 p-1.5 rounded-md text-gray-500">
+                <MapPin size={16} />
             </div>
-            <div>
-                <h1 className="text-sm font-bold tracking-tight text-[#1A1A1A] leading-none">DEALER365</h1>
-                <span className="text-[10px] text-gray-500 uppercase font-medium tracking-wide">{branchName}</span>
-            </div>
-          </div>
+            <span className="text-sm font-bold text-gray-700 tracking-tight">{branchName}</span>
         </div>
 
         {/* Center: Omni-Search */}
@@ -224,7 +219,7 @@ const Header: React.FC = () => {
           </button>
           
           <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors">
-            <Moon size={18} />
+            <Sun size={18} />
           </button>
 
           <div className="h-6 w-px bg-gray-200 mx-2"></div>

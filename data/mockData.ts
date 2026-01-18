@@ -17,6 +17,143 @@ export type ROStatus =
 export type TechStatus = 'Working' | 'Idle' | 'Lunch' | 'Leave';
 
 // ==========================================
+// 0. CONFIGURABLE MODELS (NEW FOR DIGITAL SHOWROOM)
+// ==========================================
+
+export const MOCK_CONFIGURABLE_MODELS = [
+    {
+        id: 'MOD-GV80',
+        name: 'Genesis GV80',
+        year: 2025,
+        tagline: 'Boundless Luxury',
+        basePrice: 57700,
+        assets: {
+            exterior: [
+                'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=2574&auto=format&fit=crop', // Front 3/4
+                'https://images.unsplash.com/photo-1632245889029-e413148862e7?q=80&w=2574&auto=format&fit=crop', // Side
+                'https://images.unsplash.com/photo-1627454819213-17793a8d1d86?q=80&w=2574&auto=format&fit=crop', // Rear
+            ],
+            interior: [
+                'https://images.unsplash.com/photo-1542228262-3d663b306a53?q=80&w=2670&auto=format&fit=crop', // Cockpit
+                'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2670&auto=format&fit=crop', // Seats
+            ]
+        },
+        // Detailed Configuration Options
+        configOptions: {
+            engines: [
+                { id: 'eng_25', name: '2.5L Turbo I4', price: 0, specs: '300 HP / 311 lb-ft' },
+                { id: 'eng_35', name: '3.5L Twin-Turbo V6', price: 7500, specs: '375 HP / 391 lb-ft' }
+            ],
+            transmissions: [
+                { id: 'trans_rwd', name: 'Rear Wheel Drive', price: 0, specs: 'Standard RWD' },
+                { id: 'trans_awd', name: 'All Wheel Drive', price: 2500, specs: 'Active AWD with LSD' }
+            ],
+            colors: [
+                { id: 'c1', name: 'Uyuni White', hex: '#F2F2F2', price: 575, type: 'Pearl' },
+                { id: 'c2', name: 'Vik Black', hex: '#1A1A1A', price: 575, type: 'Metallic' },
+                { id: 'c3', name: 'Cardiff Green', hex: '#2F4F4F', price: 575, type: 'Metallic' },
+                { id: 'c4', name: 'Matterhorn White', hex: '#E0E0E0', price: 1500, type: 'Matte' }
+            ],
+            interiors: [
+                { id: 'int_blk', name: 'Obsidian Black', hex: '#111111', price: 0, material: 'Leatherette' },
+                { id: 'int_bei', name: 'Vanilla Beige', hex: '#EDD9B6', price: 0, material: 'Leatherette' },
+                { id: 'int_red', name: 'Sevilla Red', hex: '#5D2121', price: 1500, material: 'Nappa Leather' },
+                { id: 'int_brn', name: 'Ultramarine Blue', hex: '#2A3B4C', price: 1500, material: 'Nappa Leather' }
+            ],
+            wheels: [
+                { id: 'w1', name: '19" Standard Alloy', price: 0, image: 'https://images.unsplash.com/photo-1583096057075-8797b5e43e26?auto=format&fit=crop&q=80&w=200' },
+                { id: 'w2', name: '20" Sport Alloy', price: 1200, image: 'https://images.unsplash.com/photo-1578844251758-2f71da645217?auto=format&fit=crop&q=80&w=200' },
+                { id: 'w3', name: '22" Dark Sputtering', price: 2500, image: 'https://images.unsplash.com/photo-1611821064430-0d41765a610d?auto=format&fit=crop&q=80&w=200' }
+            ],
+            packages: [
+                { id: 'pkg_pop', name: 'Prestige Package', price: 1200, features: 'Heads-up Display, Remote Park' },
+                { id: 'pkg_conv', name: 'Convenience Package', price: 1800, features: 'Ergo Motion Seat, Surround View' },
+                { id: 'pkg_wint', name: 'Winter Package', price: 650, features: 'Heated Steering Wheel, Rear Heated Seats' }
+            ]
+        },
+        // Legacy flat structure for list view compatibility
+        trims: [
+            { id: 't1', name: 'Standard', price: 0, features: ['2.5L Turbo', 'Leatherette', '19" Alloys'] },
+            { id: 't2', name: 'Advanced', price: 6500, features: ['Panoramic Roof', 'Leather Seating', 'Surround View'] },
+            { id: 't3', name: 'Prestige', price: 11200, features: ['3.5L Twin-Turbo', 'Nappa Leather', '22" Alloys', 'Remote Park'] }
+        ],
+        colors: [
+             { id: 'c1', name: 'Uyuni White', hex: '#F2F2F2', price: 575, type: 'Pearl' },
+             { id: 'c2', name: 'Vik Black', hex: '#1A1A1A', price: 575, type: 'Metallic' },
+             { id: 'c3', name: 'Cardiff Green', hex: '#2F4F4F', price: 575, type: 'Metallic' },
+             { id: 'c4', name: 'Matterhorn White', hex: '#E0E0E0', price: 1500, type: 'Matte' }
+        ],
+        wheels: [
+            { id: 'w1', name: '19" Standard Alloy', price: 0, image: 'https://images.unsplash.com/photo-1583096057075-8797b5e43e26?auto=format&fit=crop&q=80&w=200' },
+            { id: 'w2', name: '20" Sport Alloy', price: 1200, image: 'https://images.unsplash.com/photo-1578844251758-2f71da645217?auto=format&fit=crop&q=80&w=200' },
+            { id: 'w3', name: '22" Dark Sputtering', price: 2500, image: 'https://images.unsplash.com/photo-1611821064430-0d41765a610d?auto=format&fit=crop&q=80&w=200' }
+        ]
+    },
+    {
+        id: 'MOD-911',
+        name: 'Porsche 911',
+        year: 2024,
+        tagline: 'Timeless Machine',
+        basePrice: 114400,
+        assets: {
+            exterior: [
+                'https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=2574&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1611859328053-37207044254f?q=80&w=2574&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=2574&auto=format&fit=crop',
+            ],
+            interior: [
+                'https://images.unsplash.com/photo-1580274455191-1c62238fa333?q=80&w=2670&auto=format&fit=crop',
+                'https://images.unsplash.com/photo-1493238792015-1a419bac32d3?q=80&w=2670&auto=format&fit=crop'
+            ]
+        },
+        configOptions: {
+            engines: [
+                { id: 'eng_30', name: '3.0L Twin-Turbo Flat-6', price: 0, specs: '379 HP / 331 lb-ft' },
+                { id: 'eng_30s', name: '3.0L S Tune', price: 14500, specs: '443 HP / 390 lb-ft' }
+            ],
+            transmissions: [
+                { id: 'trans_pdk', name: '8-Speed PDK', price: 0, specs: 'Dual Clutch Automatic' },
+                { id: 'trans_man', name: '7-Speed Manual', price: 0, specs: 'No Cost Option' }
+            ],
+            colors: [
+                { id: 'c1', name: 'Guards Red', hex: '#CC0000', price: 0, type: 'Standard' },
+                { id: 'c2', name: 'Racing Yellow', hex: '#FFCC00', price: 0, type: 'Standard' },
+                { id: 'c3', name: 'Gentian Blue', hex: '#003399', price: 840, type: 'Metallic' }
+            ],
+            interiors: [
+                { id: 'int_blk', name: 'Standard Black', hex: '#111111', price: 0, material: 'Sport-Tex' },
+                { id: 'int_red', name: 'Bordeaux Red', hex: '#660000', price: 4260, material: 'Leather' }
+            ],
+            wheels: [
+                { id: 'w1', name: 'Carrera', price: 0, image: 'https://images.unsplash.com/photo-1615758362628-98e945c92843?auto=format&fit=crop&q=80&w=200' },
+                { id: 'w2', name: 'RS Spyder', price: 2540, image: 'https://images.unsplash.com/photo-1594957388701-447551062c3e?auto=format&fit=crop&q=80&w=200' }
+            ],
+            packages: [
+                { id: 'pkg_prem', name: 'Premium Package', price: 5350, features: 'Bose, Surround View, Lane Change' },
+                { id: 'pkg_sport', name: 'Sport Chrono', price: 2790, features: 'Launch Control, Mode Switch' }
+            ]
+        },
+        // Legacy
+        trims: [
+            { id: 't1', name: 'Carrera', price: 0, features: ['379 hp', 'PASM', '19"/20" Wheels'] },
+            { id: 't2', name: 'Carrera S', price: 16800, features: ['443 hp', 'Torque Vectoring', '20"/21" Wheels'] },
+            { id: 't3', name: 'Turbo S', price: 98000, features: ['640 hp', 'Ceramic Brakes', 'Active Aero'] }
+        ],
+        colors: [
+             { id: 'c1', name: 'Guards Red', hex: '#CC0000', price: 0, type: 'Standard' },
+             { id: 'c2', name: 'Racing Yellow', hex: '#FFCC00', price: 0, type: 'Standard' },
+             { id: 'c3', name: 'Gentian Blue', hex: '#003399', price: 840, type: 'Metallic' },
+             { id: 'c4', name: 'Chalk', hex: '#D6D6D6', price: 3270, type: 'Special' }
+        ],
+        wheels: [
+            { id: 'w1', name: 'Carrera', price: 0, image: 'https://images.unsplash.com/photo-1615758362628-98e945c92843?auto=format&fit=crop&q=80&w=200' },
+            { id: 'w2', name: 'RS Spyder', price: 2540, image: 'https://images.unsplash.com/photo-1594957388701-447551062c3e?auto=format&fit=crop&q=80&w=200' },
+            { id: 'w3', name: 'Exclusive Design', price: 4100, image: 'https://images.unsplash.com/photo-1628588880628-e438d1796c89?auto=format&fit=crop&q=80&w=200' }
+        ]
+    }
+];
+
+// ==========================================
 // 1. SERVICE REPAIR ORDERS (ROs)
 // ==========================================
 
