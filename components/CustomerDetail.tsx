@@ -10,15 +10,15 @@ import {
     ArrowUpRight, 
     Car, 
     Briefcase,
-    Zap,
-    Plus,
-    AlertCircle,
-    XCircle,
-    FileText,
-    Shield,
+    Zap, 
+    Plus, 
+    AlertCircle, 
+    XCircle, 
+    FileText, 
+    Shield, 
     ArrowLeft
 } from 'lucide-react';
-import { MOCK_CUSTOMER_PROFILE, MOCK_TIMELINE, MOCK_CUSTOMERS } from '../data/mockData';
+import { MOCK_CUSTOMER_PROFILE, MOCK_TIMELINE, MOCK_CUSTOMERS, MOCK_ROS } from '../data/mockData';
 
 // Icons map for timeline
 const ACTIVITY_ICONS: Record<string, any> = {
@@ -58,7 +58,7 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ customerId, onBack }) =
       <div className="bg-white border-b border-gray-200 px-6 py-4 shrink-0 z-20 shadow-sm flex justify-between items-center sticky top-0">
          <div className="flex items-center space-x-4">
             {onBack && (
-                <button onClick={onBack} className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors">
+                <button onClick={onBack} className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-gray-600 transition-colors" aria-label="Back to List">
                     <ArrowLeft size={20} />
                 </button>
             )}
@@ -126,34 +126,64 @@ const CustomerDetail: React.FC<CustomerDetailProps> = ({ customerId, onBack }) =
                         <Car size={14} className="mr-2" /> Garage ({profile.garage.length})
                     </h3>
                     <div className="space-y-4">
-                        {profile.garage.map((car, idx) => (
-                            <div key={idx} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group hover:border-blue-300 transition-colors">
-                                <div className="h-24 overflow-hidden relative">
-                                    <img src={car.image} className="w-full h-full object-cover" alt={car.model} />
-                                    <div className="absolute top-2 right-2">
-                                        <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase shadow-sm ${
-                                            car.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                        {profile.garage.map((car, idx) => {
+                            // Find history for this car
+                            const fullCarName = `${car.year} ${car.make} ${car.model}`;
+                            const serviceHistory = MOCK_ROS.filter(ro => 
+                                ro.customerName === profile.name && 
+                                (ro.vehicle === fullCarName || ro.vehicle.includes(car.model))
+                            );
+
+                            return (
+                                <div key={idx} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group hover:border-blue-300 transition-colors">
+                                    <div className="h-24 overflow-hidden relative">
+                                        <img src={car.image} className="w-full h-full object-cover" alt={car.model} />
+                                        <div className="absolute top-2 right-2">
+                                            <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase shadow-sm ${
+                                                car.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                            }`}>
+                                                {car.status}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="p-3">
+                                        <h4 className="font-bold text-gray-900 text-sm">{car.year} {car.make} {car.model}</h4>
+                                        <div className="flex items-center justify-between mt-2">
+                                            <div className="text-xs text-gray-500 font-mono">{car.vin}</div>
+                                        </div>
+                                        
+                                        {/* Warranty Status */}
+                                        <div className={`mt-3 flex items-center text-xs p-2 rounded ${
+                                            car.warranty === 'Expired' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
                                         }`}>
-                                            {car.status}
-                                        </span>
+                                            <Shield size={12} className="mr-1.5" />
+                                            <span className="font-medium">{car.warranty === 'Expired' ? 'Warranty Expired' : car.warranty}</span>
+                                        </div>
                                     </div>
+
+                                    {/* Service History Footer */}
+                                    {serviceHistory.length > 0 && (
+                                        <div className="bg-gray-50 px-3 py-2 border-t border-gray-100">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">Service History</p>
+                                            <div className="space-y-1.5">
+                                                {serviceHistory.map(ro => (
+                                                    <div key={ro.id} className="flex justify-between items-center text-xs group/item hover:bg-gray-100 rounded px-1 -mx-1 py-0.5 transition-colors cursor-pointer">
+                                                        <div className="flex items-center min-w-0">
+                                                            <FileText size={10} className="text-gray-400 mr-1.5 flex-shrink-0" />
+                                                            <span className="font-mono text-blue-600 font-medium group-hover/item:underline truncate">{ro.id}</span>
+                                                        </div>
+                                                        <div className="flex items-center space-x-2 flex-shrink-0">
+                                                            <span className="text-gray-500 text-[10px]">{new Date(ro.promiseTime).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit'})}</span>
+                                                            <span className="font-bold text-gray-900 w-12 text-right">${ro.totalEstimate.toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="p-3">
-                                    <h4 className="font-bold text-gray-900 text-sm">{car.year} {car.make} {car.model}</h4>
-                                    <div className="flex items-center justify-between mt-2">
-                                        <div className="text-xs text-gray-500 font-mono">{car.vin}</div>
-                                    </div>
-                                    
-                                    {/* Warranty Status */}
-                                    <div className={`mt-3 flex items-center text-xs p-2 rounded ${
-                                        car.warranty === 'Expired' ? 'bg-red-50 text-red-700' : 'bg-blue-50 text-blue-700'
-                                    }`}>
-                                        <Shield size={12} className="mr-1.5" />
-                                        <span className="font-medium">{car.warranty === 'Expired' ? 'Warranty Expired' : car.warranty}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </div>
             </div>

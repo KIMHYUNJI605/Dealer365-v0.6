@@ -12,7 +12,9 @@ import {
     UserCheck,
     Phone,
     Mail,
-    X
+    X,
+    Tag,
+    Trash2
 } from 'lucide-react';
 import { MOCK_CUSTOMERS } from '../data/mockData';
 
@@ -24,6 +26,41 @@ const CustomerList: React.FC<CustomerListProps> = ({ onSelectCustomer }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [tierFilter, setTierFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
+
+  // --- Tagging State ---
+  // Store tags in a local dictionary to simulate persistence during session
+  // Initialize with data from Mock
+  const [customerTags, setCustomerTags] = useState<Record<string, string[]>>(() => {
+      const initial: Record<string, string[]> = {};
+      MOCK_CUSTOMERS.forEach(c => {
+          initial[c.id] = c.tags || [];
+      });
+      return initial;
+  });
+
+  const [taggingCustomerId, setTaggingCustomerId] = useState<string | null>(null);
+  const [newTagInput, setNewTagInput] = useState('');
+
+  // --- Handlers ---
+  const handleAddTag = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!taggingCustomerId || !newTagInput.trim()) return;
+      
+      const tag = newTagInput.trim();
+      setCustomerTags(prev => {
+          const current = prev[taggingCustomerId] || [];
+          if (current.includes(tag)) return prev;
+          return { ...prev, [taggingCustomerId]: [...current, tag] };
+      });
+      setNewTagInput('');
+  };
+
+  const handleRemoveTag = (customerId: string, tagToRemove: string) => {
+      setCustomerTags(prev => ({
+          ...prev,
+          [customerId]: prev[customerId].filter(t => t !== tagToRemove)
+      }));
+  };
 
   // Filter Logic
   const filteredCustomers = MOCK_CUSTOMERS.filter(c => {
@@ -38,7 +75,7 @@ const CustomerList: React.FC<CustomerListProps> = ({ onSelectCustomer }) => {
   });
 
   return (
-    <div className="flex flex-col h-full bg-[#F8F9FA]">
+    <div className="flex flex-col h-full bg-[#F8F9FA] relative">
       
       {/* 1. Module Header */}
       <div className="bg-white border-b border-gray-200 px-6 py-5 shrink-0">
@@ -164,75 +201,100 @@ const CustomerList: React.FC<CustomerListProps> = ({ onSelectCustomer }) => {
       <div className="flex-1 overflow-auto bg-white p-6">
         <div className="grid grid-cols-1 gap-4">
             {filteredCustomers.length > 0 ? (
-                filteredCustomers.map((customer) => (
-                    <div 
-                        key={customer.id} 
-                        onClick={() => onSelectCustomer(customer.id)}
-                        className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
-                    >
-                        <div className="flex items-center justify-between">
-                            {/* Profile Info */}
-                            <div className="flex items-center space-x-4">
-                                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-lg border border-gray-200">
-                                    {customer.name.charAt(0)}
+                filteredCustomers.map((customer) => {
+                    const activeTags = customerTags[customer.id] || [];
+                    
+                    return (
+                        <div 
+                            key={customer.id} 
+                            onClick={() => onSelectCustomer(customer.id)}
+                            className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
+                        >
+                            <div className="flex items-center justify-between">
+                                {/* Profile Info */}
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-lg border border-gray-200">
+                                        {customer.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors flex items-center">
+                                            {customer.name}
+                                            {customer.tier.includes('VIP') && (
+                                                <span className="ml-2 bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center">
+                                                    <Star size={10} className="mr-1 fill-current" /> {customer.tier}
+                                                </span>
+                                            )}
+                                        </h3>
+                                        <div className="flex items-center space-x-3 text-sm text-gray-500 mt-1">
+                                            <span className="flex items-center"><Mail size={12} className="mr-1" /> {customer.email}</span>
+                                            <span className="text-gray-300">|</span>
+                                            <span className="flex items-center"><Phone size={12} className="mr-1" /> {customer.phone}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors flex items-center">
-                                        {customer.name}
-                                        {customer.tier.includes('VIP') && (
-                                            <span className="ml-2 bg-purple-100 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider flex items-center">
-                                                <Star size={10} className="mr-1 fill-current" /> {customer.tier}
-                                            </span>
-                                        )}
-                                    </h3>
-                                    <div className="flex items-center space-x-3 text-sm text-gray-500 mt-1">
-                                        <span className="flex items-center"><Mail size={12} className="mr-1" /> {customer.email}</span>
-                                        <span className="text-gray-300">|</span>
-                                        <span className="flex items-center"><Phone size={12} className="mr-1" /> {customer.phone}</span>
+
+                                {/* Stats / Vehicles */}
+                                <div className="flex items-center space-x-8">
+                                    <div className="text-right">
+                                        <div className="text-[10px] text-gray-400 font-bold uppercase">Lifetime Value</div>
+                                        <div className="text-sm font-bold text-gray-900">${customer.ltv.toLocaleString()}</div>
+                                    </div>
+                                    <div className="text-right hidden md:block">
+                                        <div className="text-[10px] text-gray-400 font-bold uppercase">Vehicles</div>
+                                        <div className="text-sm font-medium text-gray-700">{customer.vehicles.length} Owned</div>
+                                    </div>
+                                    <div className="text-right hidden lg:block">
+                                        <div className="text-[10px] text-gray-400 font-bold uppercase">Last Visit</div>
+                                        <div className="text-sm font-medium text-gray-700">{customer.lastVisit}</div>
+                                    </div>
+                                    
+                                    {/* Status */}
+                                    <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                                        customer.status === 'Active' ? 'bg-green-100 text-green-700' : 
+                                        customer.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
+                                    }`}>
+                                        {customer.status}
+                                    </div>
+
+                                    <div className="p-2 text-gray-300 group-hover:text-blue-500">
+                                        <ArrowUpRight size={20} />
                                     </div>
                                 </div>
                             </div>
+                            
+                            {/* Vehicle Badges Footer & Tags */}
+                            <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between">
+                                <div className="flex space-x-2 overflow-x-auto items-center">
+                                    {/* Vehicles */}
+                                    {customer.vehicles.map((v, i) => (
+                                        <span key={i} className="inline-flex items-center px-2 py-1 rounded bg-gray-50 text-gray-600 text-xs font-medium border border-gray-100 whitespace-nowrap">
+                                            <Car size={10} className="mr-1.5 text-gray-400" />
+                                            {v}
+                                        </span>
+                                    ))}
+                                    
+                                    <div className="w-px h-4 bg-gray-200 mx-2"></div>
 
-                            {/* Stats / Vehicles */}
-                            <div className="flex items-center space-x-8">
-                                <div className="text-right">
-                                    <div className="text-[10px] text-gray-400 font-bold uppercase">Lifetime Value</div>
-                                    <div className="text-sm font-bold text-gray-900">${customer.ltv.toLocaleString()}</div>
-                                </div>
-                                <div className="text-right hidden md:block">
-                                    <div className="text-[10px] text-gray-400 font-bold uppercase">Vehicles</div>
-                                    <div className="text-sm font-medium text-gray-700">{customer.vehicles.length} Owned</div>
-                                </div>
-                                <div className="text-right hidden lg:block">
-                                    <div className="text-[10px] text-gray-400 font-bold uppercase">Last Visit</div>
-                                    <div className="text-sm font-medium text-gray-700">{customer.lastVisit}</div>
-                                </div>
-                                
-                                {/* Status */}
-                                <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                                    customer.status === 'Active' ? 'bg-green-100 text-green-700' : 
-                                    customer.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600'
-                                }`}>
-                                    {customer.status}
-                                </div>
+                                    {/* Tags */}
+                                    {activeTags.map((tag, i) => (
+                                        <span key={i} className="inline-flex items-center px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-100 whitespace-nowrap">
+                                            <Tag size={10} className="mr-1 opacity-50" />
+                                            {tag}
+                                        </span>
+                                    ))}
 
-                                <div className="p-2 text-gray-300 group-hover:text-blue-500">
-                                    <ArrowUpRight size={20} />
+                                    {/* Add Tag Button */}
+                                    <button 
+                                        onClick={(e) => { e.stopPropagation(); setTaggingCustomerId(customer.id); }}
+                                        className="inline-flex items-center px-2 py-1 rounded-full bg-white border border-dashed border-gray-300 text-gray-400 hover:text-blue-600 hover:border-blue-400 text-[10px] font-bold transition-all"
+                                    >
+                                        <Plus size={10} className="mr-1" /> Tag
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Vehicle Badges Footer */}
-                        <div className="mt-4 pt-3 border-t border-gray-50 flex space-x-2 overflow-x-auto">
-                            {customer.vehicles.map((v, i) => (
-                                <span key={i} className="inline-flex items-center px-2 py-1 rounded bg-gray-50 text-gray-600 text-xs font-medium border border-gray-100 whitespace-nowrap">
-                                    <Car size={10} className="mr-1.5 text-gray-400" />
-                                    {v}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                ))
+                    );
+                })
             ) : (
                 <div className="text-center py-12">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
@@ -244,6 +306,87 @@ const CustomerList: React.FC<CustomerListProps> = ({ onSelectCustomer }) => {
             )}
         </div>
       </div>
+
+      {/* --- TAG MANAGER MODAL --- */}
+      {taggingCustomerId && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm p-4" onClick={() => setTaggingCustomerId(null)}>
+              <div 
+                className="bg-white rounded-xl shadow-2xl border border-gray-200 w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200"
+                onClick={e => e.stopPropagation()}
+              >
+                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                      <h3 className="font-bold text-gray-900 flex items-center">
+                          <Tag size={16} className="mr-2 text-blue-600" /> Manage Tags
+                      </h3>
+                      <button onClick={() => setTaggingCustomerId(null)} className="text-gray-400 hover:text-gray-600">
+                          <X size={18} />
+                      </button>
+                  </div>
+                  
+                  <div className="p-4">
+                      {/* Current Tags List */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                          {(customerTags[taggingCustomerId] || []).map(tag => (
+                              <span key={tag} className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
+                                  {tag}
+                                  <button 
+                                    onClick={() => handleRemoveTag(taggingCustomerId, tag)}
+                                    className="ml-1.5 hover:text-blue-900 focus:outline-none"
+                                  >
+                                      <X size={12} />
+                                  </button>
+                              </span>
+                          ))}
+                          {(customerTags[taggingCustomerId] || []).length === 0 && (
+                              <span className="text-sm text-gray-400 italic">No tags assigned yet.</span>
+                          )}
+                      </div>
+
+                      {/* Add New Tag Input */}
+                      <form onSubmit={handleAddTag} className="flex space-x-2">
+                          <input 
+                              type="text" 
+                              value={newTagInput}
+                              onChange={e => setNewTagInput(e.target.value)}
+                              placeholder="New tag (e.g. Hot Lead)..."
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              autoFocus
+                          />
+                          <button 
+                              type="submit" 
+                              disabled={!newTagInput.trim()}
+                              className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-bold hover:bg-black disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                              Add
+                          </button>
+                      </form>
+                      
+                      {/* Suggested Tags */}
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                          <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">Suggestions</p>
+                          <div className="flex flex-wrap gap-2">
+                              {['VIP', 'Service Due', 'Complaint Open', 'Budget Conscious', 'Referral'].map(sug => (
+                                  <button 
+                                    key={sug}
+                                    onClick={() => {
+                                        setCustomerTags(prev => {
+                                            const current = prev[taggingCustomerId] || [];
+                                            if (current.includes(sug)) return prev;
+                                            return { ...prev, [taggingCustomerId]: [...current, sug] };
+                                        });
+                                    }}
+                                    className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-600 hover:bg-gray-100 transition-colors"
+                                  >
+                                      + {sug}
+                                  </button>
+                              ))}
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      )}
+
     </div>
   );
 };

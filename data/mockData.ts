@@ -259,6 +259,7 @@ export const MOCK_CUSTOMERS = [
     status: 'Active',
     ltv: 245000,
     vehicles: ['Aston Martin DB5', 'Land Rover Defender'],
+    tags: ['Service Loyalist', 'Classic Collector'],
     lastVisit: 'Oct 24, 2023',
     sentiment: 'Happy'
   },
@@ -272,6 +273,7 @@ export const MOCK_CUSTOMERS = [
     status: 'Active',
     ltv: 850000,
     vehicles: ['Audi e-tron GT', 'Audi R8', 'Acura NSX'],
+    tags: ['High Net Worth', 'Tech Enthusiast', 'Early Adopter'],
     lastVisit: 'Oct 20, 2023',
     sentiment: 'Neutral'
   },
@@ -285,6 +287,7 @@ export const MOCK_CUSTOMERS = [
     status: 'At Risk',
     ltv: 45000,
     vehicles: ['BMW X5 M50i'],
+    tags: ['Service Due', 'Complaint Open'],
     lastVisit: 'Yesterday',
     sentiment: 'Frustrated'
   },
@@ -298,6 +301,7 @@ export const MOCK_CUSTOMERS = [
     status: 'Inactive',
     ltv: 12000,
     vehicles: ['Pontiac Aztek', 'Chrysler 300'],
+    tags: ['Budget Conscious'],
     lastVisit: '3 Months ago',
     sentiment: 'Happy'
   },
@@ -311,6 +315,7 @@ export const MOCK_CUSTOMERS = [
     status: 'Active',
     ltv: 160000,
     vehicles: ['Mercedes-Benz G63 AMG'],
+    tags: ['Diplomat'],
     lastVisit: 'Oct 22, 2023',
     sentiment: 'Happy'
   }
@@ -618,6 +623,17 @@ export const MOCK_ACTIVITIES = [
         duration: 15,
         status: 'PLANNED',
         customerName: 'Walter White',
+        priority: 'NORMAL'
+    },
+    {
+        id: 'ACT-008',
+        type: 'MEETING',
+        title: 'Inventory Review',
+        date: getDate(3),
+        time: '09:00',
+        duration: 60,
+        status: 'PLANNED',
+        customerName: 'Sales Team',
         priority: 'NORMAL'
     }
 ];

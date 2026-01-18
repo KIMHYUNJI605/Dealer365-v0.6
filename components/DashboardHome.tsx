@@ -515,11 +515,28 @@ const KPICard = ({ label, value, icon: Icon, trend, color, bg, isAlert, sparklin
 );
 
 const StatusBadge = ({ status }: { status: string }) => {
-    let styles = "bg-gray-100 text-gray-600";
-    if (status === 'Working') styles = "bg-green-50 text-green-700 border border-green-200";
-    if (status === 'Diagnosis') styles = "bg-blue-50 text-blue-700 border border-blue-200";
-    if (status === 'Approval Pending') styles = "bg-yellow-50 text-yellow-700 border border-yellow-200";
-    if (status === 'Parts Hold') styles = "bg-red-50 text-red-700 border border-red-200";
+    let styles = "bg-gray-100 text-gray-600 border border-gray-200";
+    
+    // Green: Actionable/Good/Working
+    if (['Ready', 'Working', 'Active Repair'].includes(status)) {
+        styles = "bg-green-50 text-green-700 border border-green-200";
+    }
+    // Blue: Diagnosis/Inspection
+    else if (['Diagnosis', 'Tech Inspection'].includes(status)) {
+        styles = "bg-blue-50 text-blue-700 border border-blue-200";
+    }
+    // Yellow: Warning/Waiting on Decision
+    else if (['Approval Pending', 'Estimate Review'].includes(status)) {
+        styles = "bg-yellow-50 text-yellow-700 border border-yellow-200";
+    }
+    // Red: Stalled/Critical
+    else if (['Parts Hold', 'Parts Ordering'].includes(status)) {
+        styles = "bg-red-50 text-red-700 border border-red-200";
+    }
+    // Purple: Intake/Dispatch
+    else if (['Checked-In', 'Dispatch'].includes(status)) {
+        styles = "bg-purple-50 text-purple-700 border border-purple-200";
+    }
     
     return (
         <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${styles}`}>

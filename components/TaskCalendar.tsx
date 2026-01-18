@@ -13,13 +13,17 @@ import {
     Users, 
     AlertCircle,
     CheckCircle2,
-    Briefcase
+    Briefcase,
+    X,
+    MapPin,
+    ArrowRight
 } from 'lucide-react';
 import { MOCK_ACTIVITIES } from '../data/mockData';
 
 const TaskCalendar: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [taskFilter, setTaskFilter] = useState<'TODAY' | 'OVERDUE' | 'UPCOMING'>('TODAY');
+    const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
 
     // Helper to format date
     const formatDate = (date: Date) => {
@@ -76,8 +80,55 @@ const TaskCalendar: React.FC = () => {
     };
 
     return (
-        <div className="flex h-full bg-[#F8F9FA] overflow-hidden">
+        <div className="flex h-full bg-[#F8F9FA] overflow-hidden relative">
             
+            {/* Quick Info Popover Overlay */}
+            {selectedEvent && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedEvent(null)}>
+                    <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6 w-96 animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        {/* Popover Header */}
+                        <div className="flex justify-between items-start mb-4">
+                            <div>
+                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase flex w-fit items-center ${getEventStyle(selectedEvent.type)}`}>
+                                  {React.createElement(getIcon(selectedEvent.type), { size: 10, className: "mr-1" })}
+                                  {selectedEvent.type.replace('_', ' ')}
+                               </span>
+                               <h3 className="text-xl font-bold text-gray-900 mt-2">{selectedEvent.title}</h3>
+                            </div>
+                            <button onClick={() => setSelectedEvent(null)} className="p-1 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-600 transition-colors">
+                                <X size={20}/>
+                            </button>
+                        </div>
+                        
+                        {/* Popover Body */}
+                        <div className="space-y-4">
+                            <div className="flex items-center text-sm text-gray-600">
+                                <Clock size={16} className="mr-3 text-gray-400" />
+                                <span>{selectedEvent.date} • {selectedEvent.time} ({selectedEvent.duration} min)</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                                <Users size={16} className="mr-3 text-gray-400" />
+                                <span className="font-medium text-gray-900">{selectedEvent.customerName}</span>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                                <MapPin size={16} className="mr-3 text-gray-400" />
+                                <span>Main Showroom • Desk 4</span>
+                            </div>
+                        </div>
+
+                        {/* Popover Actions */}
+                        <div className="flex space-x-3 mt-6 pt-6 border-t border-gray-100">
+                            <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-sm flex items-center justify-center transition-colors">
+                                <Phone size={16} className="mr-2" /> Call
+                            </button>
+                            <button className="flex-1 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-2.5 rounded-lg text-sm flex items-center justify-center transition-colors">
+                                <ArrowRight size={16} className="mr-2" /> Reschedule
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* LEFT PANEL: CALENDAR (70%) */}
             <div className="flex-1 flex flex-col min-w-0 border-r border-gray-200 bg-white">
                 
@@ -88,11 +139,11 @@ const TaskCalendar: React.FC = () => {
                             <Calendar className="mr-2 text-blue-600" /> Weekly Schedule
                         </h2>
                         <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                            <button className="p-1 hover:bg-white rounded shadow-sm transition-all"><ChevronLeft size={16} /></button>
-                            <span className="px-3 text-sm font-bold text-gray-700">
-                                {weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {weekDates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            <button className="p-1 hover:bg-white rounded shadow-sm transition-all text-gray-500"><ChevronLeft size={16} /></button>
+                            <span className="px-3 text-sm font-bold text-gray-700 w-32 text-center">
+                                {weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {weekDates[6].getDate()}
                             </span>
-                            <button className="p-1 hover:bg-white rounded shadow-sm transition-all"><ChevronRight size={16} /></button>
+                            <button className="p-1 hover:bg-white rounded shadow-sm transition-all text-gray-500"><ChevronRight size={16} /></button>
                         </div>
                     </div>
                     <div className="flex space-x-2">
@@ -106,7 +157,7 @@ const TaskCalendar: React.FC = () => {
                 <div className="flex-1 overflow-y-auto flex flex-col relative">
                     {/* Header Row (Days) */}
                     <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-20">
-                        <div className="w-16 shrink-0 border-r border-gray-200"></div> {/* Time Col Placeholder */}
+                        <div className="w-16 shrink-0 border-r border-gray-200 bg-gray-50"></div> {/* Time Col Placeholder */}
                         {weekDates.map(date => {
                             const isToday = formatDate(date) === todayStr;
                             return (
@@ -156,15 +207,16 @@ const TaskCalendar: React.FC = () => {
                                             return (
                                                 <div 
                                                     key={evt.id}
-                                                    className={`absolute left-1 right-1 rounded-md p-2 text-xs border cursor-pointer hover:shadow-lg transition-all group ${getEventStyle(evt.type)}`}
+                                                    onClick={(e) => { e.stopPropagation(); setSelectedEvent(evt); }}
+                                                    className={`absolute left-1 right-1 rounded-md p-2 text-xs border cursor-pointer hover:shadow-lg hover:z-20 transition-all group ${getEventStyle(evt.type)}`}
                                                     style={{ top: `${top}px`, height: `${height}px` }}
                                                 >
                                                     <div className="font-bold truncate">{evt.time} - {evt.title}</div>
                                                     <div className="truncate opacity-80 mt-0.5">{evt.customerName}</div>
                                                     
-                                                    {/* Quick Actions Overlay */}
-                                                    <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 flex space-x-1">
-                                                        <button className="p-1 bg-white rounded-full shadow text-blue-600 hover:bg-blue-50"><Phone size={10} /></button>
+                                                    {/* Quick Actions Overlay (Visible on Hover) */}
+                                                    <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 flex space-x-1 transition-opacity">
+                                                        <button className="p-1 bg-white rounded-full shadow text-blue-600 hover:bg-blue-50" title="Quick Call"><Phone size={10} /></button>
                                                     </div>
                                                 </div>
                                             );
@@ -184,8 +236,8 @@ const TaskCalendar: React.FC = () => {
                         <h2 className="text-lg font-bold text-gray-900 flex items-center">
                             <CheckSquare className="mr-2 text-purple-600" /> Tasks & To-Dos
                         </h2>
-                        <button className="text-gray-400 hover:text-gray-600">
-                            <Plus size={20} />
+                        <button className="text-gray-400 hover:text-gray-600 bg-white p-1.5 rounded-lg border border-gray-200 shadow-sm">
+                            <Plus size={18} />
                         </button>
                     </div>
 
@@ -211,7 +263,7 @@ const TaskCalendar: React.FC = () => {
                             return (
                                 <div key={task.id} className="bg-white p-3 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
                                     <div className="flex items-start space-x-3">
-                                        <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center cursor-pointer ${
+                                        <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center cursor-pointer transition-colors ${
                                             task.status === 'COMPLETED' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 hover:border-blue-500'
                                         }`}>
                                             {task.status === 'COMPLETED' && <CheckCircle2 size={14} />}
@@ -237,9 +289,9 @@ const TaskCalendar: React.FC = () => {
 
                                     {/* Hover Actions */}
                                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2 bg-white pl-2">
-                                        <button className="text-gray-400 hover:text-blue-600"><Phone size={16} /></button>
-                                        <button className="text-gray-400 hover:text-blue-600"><Mail size={16} /></button>
-                                        <button className="text-gray-400 hover:text-gray-600"><MoreHorizontal size={16} /></button>
+                                        <button className="text-gray-400 hover:text-blue-600 p-1 hover:bg-blue-50 rounded"><Phone size={16} /></button>
+                                        <button className="text-gray-400 hover:text-blue-600 p-1 hover:bg-blue-50 rounded"><Mail size={16} /></button>
+                                        <button className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded"><MoreHorizontal size={16} /></button>
                                     </div>
                                 </div>
                             );
