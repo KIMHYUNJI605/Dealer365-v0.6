@@ -16,6 +16,8 @@ export type ROStatus =
 
 export type TechStatus = 'Working' | 'Idle' | 'Lunch' | 'Leave';
 
+export type DealStatus = 'Working' | 'Negotiation' | 'F&I Pending' | 'Approved' | 'Sold';
+
 // ==========================================
 // 0. CONFIGURABLE MODELS (NEW FOR DIGITAL SHOWROOM)
 // ==========================================
@@ -150,6 +152,118 @@ export const MOCK_CONFIGURABLE_MODELS = [
             { id: 'w2', name: 'RS Spyder', price: 2540, image: 'https://images.unsplash.com/photo-1594957388701-447551062c3e?auto=format&fit=crop&q=80&w=200' },
             { id: 'w3', name: 'Exclusive Design', price: 4100, image: 'https://images.unsplash.com/photo-1628588880628-e438d1796c89?auto=format&fit=crop&q=80&w=200' }
         ]
+    }
+];
+
+// ==========================================
+// 0.5 DEAL DESK FINANCE DATA (NEW)
+// ==========================================
+
+export const MOCK_FINANCE_RATES = {
+    creditTiers: {
+        "750+ (Super Prime)": 4.9,
+        "700-749 (Prime)": 5.9,
+        "650-699 (Non-Prime)": 7.9,
+        "600-649 (Sub-Prime)": 10.9,
+        "Below 600 (Deep Sub-Prime)": 15.9
+    },
+    terms: [36, 48, 60, 72, 84],
+    products: [
+        { id: 'fi_gap', name: 'GAP Insurance', price: 895, type: 'Insurance' },
+        { id: 'fi_main', name: 'Maintenance Plan (3yr)', price: 1295, type: 'Service' },
+        { id: 'fi_tire', name: 'Tire & Wheel Protection', price: 695, type: 'Protection' },
+        { id: 'fi_cer', name: 'Ceramic Coating', price: 1495, type: 'Protection' }
+    ]
+};
+
+// ==========================================
+// 0.6 DEALS (For Deal Management Hub)
+// ==========================================
+
+export const MOCK_DEALS = [
+    {
+        id: 'DL-1001',
+        status: 'Negotiation',
+        customerName: 'James Miller',
+        tier: 'VIP Platinum',
+        vehicle: '2025 Genesis GV80',
+        stockNo: 'GN-25-882',
+        image: 'https://images.unsplash.com/photo-1619682817481-e994891cd1f5?auto=format&fit=crop&q=80&w=200',
+        price: 68450,
+        monthly: 985,
+        gross: 3200,
+        probability: 75,
+        updated: '2h ago'
+    },
+    {
+        id: 'DL-1002',
+        status: 'F&I Pending',
+        customerName: 'Natalie Rushman',
+        tier: 'Gold',
+        vehicle: '2024 Porsche 911 Carrera',
+        stockNo: 'PO-24-110',
+        image: 'https://images.unsplash.com/photo-1503376763036-066120622c74?auto=format&fit=crop&q=80&w=200',
+        price: 114400,
+        monthly: 1850,
+        gross: 8500,
+        probability: 90,
+        updated: '4h ago'
+    },
+    {
+        id: 'DL-1003',
+        status: 'Working',
+        customerName: 'Ethan Hunt',
+        tier: 'Silver',
+        vehicle: '2024 BMW X5 M50i',
+        stockNo: 'BM-24-332',
+        image: 'https://images.unsplash.com/photo-1556155092-490a1ba16284?auto=format&fit=crop&q=80&w=200',
+        price: 82100,
+        monthly: 1250,
+        gross: 2800,
+        probability: 45,
+        updated: 'Yesterday'
+    },
+    {
+        id: 'DL-1004',
+        status: 'Approved',
+        customerName: 'Tony Stark',
+        tier: 'VIP Platinum',
+        vehicle: '2024 Audi e-tron GT',
+        stockNo: 'AU-24-001',
+        image: 'https://images.unsplash.com/photo-1603584173870-7b299f589c76?auto=format&fit=crop&q=80&w=200',
+        price: 145000,
+        monthly: 2400,
+        gross: 12000,
+        probability: 95,
+        updated: '1d ago'
+    },
+    {
+        id: 'DL-1005',
+        status: 'Working',
+        customerName: 'Steve Rogers',
+        tier: 'Gold',
+        vehicle: '2024 Chevrolet Corvette',
+        stockNo: 'CH-24-776',
+        image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=200', // Placeholder
+        price: 92000,
+        monthly: 1450,
+        gross: 4500,
+        probability: 30,
+        updated: '2d ago'
+    },
+    {
+        id: 'DL-1006',
+        status: 'Sold',
+        customerName: 'Diana Prince',
+        tier: 'VIP Gold',
+        vehicle: '2023 Mercedes-Benz G63',
+        stockNo: 'MB-23-999',
+        image: 'https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&q=80&w=200', // Placeholder
+        price: 185000,
+        monthly: 0,
+        gross: 15400,
+        probability: 100,
+        updated: 'Oct 22'
     }
 ];
 

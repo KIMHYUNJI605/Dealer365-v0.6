@@ -5,10 +5,14 @@ import DashboardHome from './DashboardHome';
 import DispatchBoard from './DispatchBoard';
 import TechnicianView from './TechnicianView';
 import SalesShowroom from './SalesShowroom';
+import DealDesk from './DealDesk';
+import DealsHub from './DealsHub';
+import QuoteList from './QuoteList';
 import CRMLeads from './CRMLeads';
 import Customer360 from './Customer360';
 import CustomerDetail from './CustomerDetail';
 import TaskCalendar from './TaskCalendar';
+import AIAssistant from './AIAssistant';
 import { useNavigation } from '../context/NavigationContext';
 import { ViewType } from '../types';
 import { FileText } from 'lucide-react';
@@ -48,11 +52,15 @@ const Layout: React.FC = () => {
       case ViewType.CUSTOMER_360:
         return <Customer360 />; // The List View
       case ViewType.CUSTOMER_DETAIL:
-        return <CustomerDetail />; // The James Bond Profile
+        return <CustomerDetail />; // The Specific Profile (James Bond)
       case ViewType.CALENDAR:
         return <TaskCalendar />;
       case ViewType.SALES:
         return <SalesShowroom />;
+      case ViewType.DEAL_DESK:
+        return <DealsHub />; // The Hub Controller (List <-> Detail)
+      case ViewType.DEAL_EDITOR:
+        return <DealDesk />; // The Standalone Editor (from Configurator)
       case ViewType.SERVICE:
         return <DispatchBoard />;
       case ViewType.TECH_VIEW:
@@ -78,6 +86,8 @@ const Layout: React.FC = () => {
         <main className="flex-1 overflow-y-auto p-0 relative">
           {renderContent()}
         </main>
+        {/* Global Floating AI Assistant */}
+        <AIAssistant />
       </div>
     </div>
   );

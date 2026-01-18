@@ -15,9 +15,12 @@ import {
   ArrowRight,
   Eye,
   Box,
-  Car
+  Car,
+  Calculator
 } from 'lucide-react';
 import { MOCK_CONFIGURABLE_MODELS } from '../data/mockData';
+import { useNavigation } from '../context/NavigationContext';
+import { ViewType } from '../types';
 
 // --- Types ---
 type ConfigCategory = 'ENGINE' | 'TRANSMISSION' | 'EXTERIOR' | 'INTERIOR' | 'WHEEL' | 'OPTION';
@@ -28,6 +31,9 @@ interface VehicleConfiguratorProps {
 }
 
 const VehicleConfigurator: React.FC<VehicleConfiguratorProps> = ({ modelId, onBack }) => {
+    // 0. Context for Navigation
+    const { openTab } = useNavigation();
+
     // 1. Data Loading
     const model = MOCK_CONFIGURABLE_MODELS.find(m => m.id === modelId) || MOCK_CONFIGURABLE_MODELS[0];
     const opts = model.configOptions;
@@ -83,6 +89,25 @@ const VehicleConfigurator: React.FC<VehicleConfiguratorProps> = ({ modelId, onBa
     const handleRotate = () => {
         const assets = viewMode === 'EXT' ? model.assets.exterior : model.assets.interior;
         setCurrentAngleIndex((prev) => (prev + 1) % assets.length);
+    };
+
+    const handleFinish = () => {
+        // Create a unique ID for this new deal
+        const quoteId = `QUOTE-${Date.now().toString().slice(-6)}`;
+        
+        openTab({
+            id: quoteId,
+            type: ViewType.DEAL_EDITOR,
+            title: `Deal: ${model.name}`,
+            icon: Calculator,
+            data: {
+                modelId: model.id,
+                selections: selections,
+                totalPrice: totalPrice,
+                source: 'Configurator'
+            },
+            isClosable: true
+        });
     };
 
     const currentImage = viewMode === 'EXT' 
@@ -281,7 +306,10 @@ const VehicleConfigurator: React.FC<VehicleConfiguratorProps> = ({ modelId, onBa
                     <DockItem label="Option" icon={Package} active={activeCategory === 'OPTION'} onClick={() => handleCategoryChange('OPTION')} />
                     
                     {/* Finish Action */}
-                    <button className="ml-2 px-6 py-3 bg-[#3FE0C5] text-black rounded-full font-bold text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center shrink-0 shadow-[0_0_15px_#3FE0C540]">
+                    <button 
+                        onClick={handleFinish}
+                        className="ml-2 px-6 py-3 bg-[#3FE0C5] text-black rounded-full font-bold text-xs uppercase tracking-widest hover:bg-white transition-colors flex items-center shrink-0 shadow-[0_0_15px_#3FE0C540]"
+                    >
                         <span>Finish</span>
                         <ArrowRight size={14} className="ml-2" />
                     </button>

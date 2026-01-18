@@ -21,6 +21,8 @@ export enum ViewType {
   CUSTOMER_360 = 'CUSTOMER_360',   // The Search/List Dashboard
   CUSTOMER_DETAIL = 'CUSTOMER_DETAIL', // The Specific Profile (James Bond)
   CALENDAR = 'CALENDAR',
+  DEAL_DESK = 'DEAL_DESK',       // The List of Quotes
+  DEAL_EDITOR = 'DEAL_EDITOR',   // The Actual Calculation Screen (From Configurator)
 }
 
 export interface MenuItem {

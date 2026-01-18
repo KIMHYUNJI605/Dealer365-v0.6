@@ -44,7 +44,7 @@ const MENU_STRUCTURE = [
     submenu: [
       { id: "sales-inventory", label: "Inventory Search", viewType: ViewType.SALES },
       { id: "sales-showroom", label: "Digital Showroom", viewType: ViewType.SALES },
-      { id: "sales-desking", label: "Deals & Quoting", viewType: ViewType.SALES },
+      { id: "sales-desking", label: "Deals & Desking", viewType: ViewType.DEAL_DESK },
       { id: "sales-contract", label: "Contracts", viewType: ViewType.SALES }
     ]
   },
